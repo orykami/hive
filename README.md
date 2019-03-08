@@ -1,5 +1,6 @@
-# Cloudspire
+# Hive
 
 ## License
 
-Cloudspire is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+Hive is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
