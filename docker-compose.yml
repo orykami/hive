@@ -1,0 +1,90 @@
+# Docker Environnment for Cloudspire application
+# @note Intégrer Sentry [https://hub.docker.com/_/sentry/]
+# @note Intégrer Certbot dans l'infra
+# @note Installer node
+version: '3'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  redis:
+    driver: ${VOLUMES_DRIVER}
+  mariadb:
+    driver: ${VOLUMES_DRIVER}
+  elasticsearch:
+    driver: ${VOLUMES_DRIVER}
+
+
+services:
+  cloudspire:
+    build:
+      context: docker/cloudspire
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+    ports:
+      - "${WORKSPACE_SSH_PORT}:22"
+    tty: true
+    environment:
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+    networks:
+      - frontend
+      - backend
+
+  mariadb:
+    build: docker/mariadb
+    volumes:
+      - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
+    ports:
+      - "${MARIADB_PORT}:3306"
+    environment:
+      - MYSQL_DATABASE=${MARIADB_DATABASE}
+      - MYSQL_USER=${MARIADB_USER}
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    networks:
+      - backend
+
+  redis:
+    build: docker/redis
+    networks:
+      - backend
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - ${DATA_PATH_HOST}/redis:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+
+  elasticsearch:
+    build: docker/elasticsearch
+    volumes:
+      - ${DATA_PATH_HOST}/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - cluster.name=hive-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_HOST_HTTP_PORT}:9200"
+      - "${ELASTICSEARCH_HOST_TRANSPORT_PORT}:9300"
+    networks:
+      - frontend
+      - backend
+
+  kibana:ild: docker/kibana
+    bu
+    ports:
+      - "${KIBANA_HTTP_PORT}:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - frontend
+      - backend
