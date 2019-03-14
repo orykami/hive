@@ -1,7 +1,4 @@
-# Docker Environnment for Cloudspire application
-# @note Intégrer Sentry [https://hub.docker.com/_/sentry/]
-# @note Intégrer Certbot dans l'infra
-# @note Installer node
+# Docker Hive environment
 version: '3'
 
 networks:
@@ -18,11 +15,10 @@ volumes:
   elasticsearch:
     driver: ${VOLUMES_DRIVER}
 
-
 services:
-  cloudspire:
+  workspace:
     build:
-      context: docker/cloudspire
+      context: docker/workspace
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
@@ -32,6 +28,43 @@ services:
     tty: true
     environment:
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+    networks:
+      - frontend
+      - backend
+  php:
+    build:
+      context: docker/php
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    volumes:
+      - ${PHP_INI_OVERRIDE_PATH}:/usr/local/etc/php/conf.d/php-ini-override.ini
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+    expose:
+      - "9000"
+    environment:
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      - PUID=${PHP_WORKER_PUID}
+      - PGID=${PHP_WORKER_PGID
+    depends_on:
+      - workspace
+    networks:
+      - backend
+  nginx:
+    build:
+      context: docker/nginx
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+      - ${NGINX_VHOSTS_PATH}:/etc/nginx/vhosts
+      - ${NGINX_CONF_PATH}:/etc/nginx/nginx.conf
+      - ${NGINX_CONFD_PATH}:/etc/nginx/conf.d
+      - ${NGINX_SNIPPETS_PATH}:/etc/nginx/snippets
+      - ${NGINX_SSL_PATH}:/etc/nginx/ssl
+    ports:
+      - "${NGINX_HOST_HTTP_PORT}:80"
+      - "${NGINX_HOST_HTTPS_PORT}:443"
+    depends_on:
+      - php
     networks:
       - frontend
       - backend
@@ -79,8 +112,8 @@ services:
       - frontend
       - backend
 
-  kibana:ild: docker/kibana
-    bu
+  kibana:
+    build: docker/kibana
     ports:
       - "${KIBANA_HTTP_PORT}:5601"
     depends_on:
