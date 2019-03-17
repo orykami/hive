@@ -1,4 +1,4 @@
-# Hive
+# Hive - Docker container environment for modern web applications
 
 ## Inspiration
 Ce projet est inspiré du projet Laradock (https://laradock.io).
