@@ -59,6 +59,7 @@ services:
       - "${NGINX_HOST_HTTPS_PORT}:443"
     depends_on:
       - php
+      - node
     networks:
       - frontend
       - backend
@@ -66,6 +67,7 @@ services:
   mariadb:
     build: docker/mariadb
     volumes:
+      - ${MARIADB_MY_CNF}:/etc/mysql/conf.d/my.cnf
       - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
     ports:
       - "${MARIADB_PORT}:3306"

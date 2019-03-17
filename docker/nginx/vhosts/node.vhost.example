@@ -1,0 +1,21 @@
+server
+{
+  server_name node.hive.dev.local;
+  include snippets/security/filesystem.conf;
+  include snippets/security/ssl.conf;
+
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  ssl_certificate /etc/nginx/ssl/hive.crt;
+  ssl_certificate_key /etc/nginx/ssl/hive.key;
+  ssl_trusted_certificate /etc/nginx/ssl/RootCA.pem;
+
+  root /var/www/node-app;
+
+  location / {
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_pass http://node-upstream;
+  }
+}

@@ -1,6 +1,6 @@
 server
 {
-  server_name api.hive.dev.local;
+  server_name laravel.hive.dev.local;
   include snippets/security/filesystem.conf;
   include snippets/security/ssl.conf;
 
