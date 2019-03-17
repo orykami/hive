@@ -36,7 +36,10 @@ services:
       args:
         - NODE_VERSION=${NODE_VERSION}
     volumes:
+      - ${NODE_SUPERVISORD_PATH}:/etc/supervisor/supervisor.d
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+    environment:
+      - APPLICATION_ENV=${APPLICATION_ENV}
     networks:
       - backend
 
