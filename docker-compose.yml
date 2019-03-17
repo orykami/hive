@@ -1,4 +1,3 @@
-# Docker Hive environment
 version: '3'
 
 networks:
@@ -16,21 +15,7 @@ volumes:
     driver: ${VOLUMES_DRIVER}
 
 services:
-  workspace:
-    build:
-      context: docker/workspace
-      args:
-        - PHP_VERSION=${PHP_VERSION}
-    volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-    ports:
-      - "${WORKSPACE_SSH_PORT}:22"
-    tty: true
-    environment:
-      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-    networks:
-      - frontend
-      - backend
+
   php:
     build:
       context: docker/php
@@ -38,17 +23,25 @@ services:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
       - ${PHP_INI_OVERRIDE_PATH}:/usr/local/etc/php/conf.d/php-ini-override.ini
+      - ${PHP_SUPERVISORD_PATH}:/etc/supervisor/supervisor.d
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-    expose:
-      - "9000"
     environment:
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
       - PUID=${PHP_WORKER_PUID}
-      - PGID=${PHP_WORKER_PGID
-    depends_on:
-      - workspace
+      - PGID=${PHP_WORKER_PGID}
     networks:
       - backend
+
+  node:
+    build:
+      context: docker/node
+      args:
+        - NODE_VERSION=${NODE_VERSION}
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+    networks:
+      - backend
+
   nginx:
     build:
       context: docker/nginx
@@ -100,7 +93,7 @@ services:
     environment:
       - cluster.name=hive-cluster
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms${ELASTICSEARCH_MAX_MEMORY_SIZE} -Xmx${ELASTICSEARCH_MAX_MEMORY_SIZE}"
     ulimits:
       memlock:
         soft: -1
