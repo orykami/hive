@@ -5,11 +5,11 @@ RUN apk update \
     && apk upgrade \
     && apk add --no-cache openssl \
     && apk add --no-cache bash \
-    && adduser -D -H -u 1000 -s /bin/bash www-data
+    && adduser -D -H -u 1000 -s /bin/bash www-data \
+    && mkdir -p /etc/nginx/sites-enabled
 
 # Adding CSR/SSL script & config for Local SSL Generation
 ADD ./scripts/startup.sh /opt/startup.sh
-ADD ./scripts/ssl/domains.ext /opt/domains.ext
 
 CMD ["/bin/bash", "/opt/startup.sh"]
 

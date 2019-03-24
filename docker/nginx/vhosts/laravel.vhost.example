@@ -1,15 +1,23 @@
 server
 {
-  server_name laravel.hive.dev.local;
+  server_name localhost default_server;
+  include snippets/security/filesystem.conf;
+  listen 80;
+  listen [::]:80;
+  return 301 https://$host:${NGINX_HOST_HTTPS_PORT}$request_uri;
+}
+
+server
+{
+  server_name localhost default_server;
   include snippets/security/filesystem.conf;
   include snippets/security/ssl.conf;
 
   listen 443 ssl http2;
   listen [::]:443 ssl http2;
 
-  ssl_certificate /etc/nginx/ssl/hive.crt;
-  ssl_certificate_key /etc/nginx/ssl/hive.key;
-  ssl_trusted_certificate /etc/nginx/ssl/RootCA.pem;
+  ssl_certificate /etc/nginx/ssl/hive.default.crt;
+  ssl_certificate_key /etc/nginx/ssl/hive.default.key;
 
   root /var/www/api/public;
   index index.php;

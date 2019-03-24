@@ -26,7 +26,7 @@ services:
       - ${PHP_SUPERVISORD_PATH}:/etc/supervisor/supervisor.d
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
     environment:
-      - APPLICATION_ENV=${APPLICATION_ENV}
+      - APP_ENV=${APPLICATION_ENV}
     networks:
       - backend
 
@@ -39,7 +39,7 @@ services:
       - ${NODE_SUPERVISORD_PATH}:/etc/supervisor/supervisor.d
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
     environment:
-      - APPLICATION_ENV=${APPLICATION_ENV}
+      - APP_ENV=${APPLICATION_ENV}
     networks:
       - backend
 
@@ -57,6 +57,9 @@ services:
     ports:
       - "${NGINX_HOST_HTTP_PORT}:80"
       - "${NGINX_HOST_HTTPS_PORT}:443"
+    environment:
+      - NGINX_HOST_HTTP_PORT=${NGINX_HOST_HTTP_PORT}
+      - NGINX_HOST_HTTPS_PORT=${NGINX_HOST_HTTPS_PORT}
     depends_on:
       - php
       - node

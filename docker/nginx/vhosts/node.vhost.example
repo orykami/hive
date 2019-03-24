@@ -1,6 +1,16 @@
 server
 {
-  server_name node.hive.dev.local;
+  server_name localhost default_server;
+  include snippets/security/filesystem.conf;
+  listen 80;
+  listen [::]:80;
+  return 301 https://$host:${NGINX_HOST_HTTPS_PORT}$request_uri;
+}
+
+
+server
+{
+  server_name localhost;
   include snippets/security/filesystem.conf;
   include snippets/security/ssl.conf;
 
