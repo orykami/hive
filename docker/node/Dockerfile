@@ -7,6 +7,7 @@ RUN echo @main http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositori
     apk update && apk upgrade &&\
     apk add --no-cache \
     bash \
+    git \
     supervisor \
     curl && \
     mkdir -p /var/log/supervisor && \

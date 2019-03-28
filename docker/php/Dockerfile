@@ -9,6 +9,7 @@ RUN echo @main http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositori
     apk add --no-cache \
     bash \
     wget \
+    git \
     icu-dev \
     supervisor \
     libxml2-dev \
