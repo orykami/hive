@@ -4,7 +4,7 @@ LABEL maintainer="Benoit JACQUOT <88.jacquot.benoit@gmail.com>"
 
 RUN echo @main http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
     echo /etc/apk/respositories && \
-    apk update && apk upgrade &&\
+    apk update &&\
     apk add --no-cache \
     bash \
     git \

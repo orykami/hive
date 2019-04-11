@@ -5,7 +5,7 @@ LABEL maintainer="Benoit JACQUOT <88.jacquot.benoit@gmail.com>"
 
 RUN echo @main http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
     echo /etc/apk/respositories && \
-    apk update && apk upgrade &&\
+    apk update &&\
     apk add --no-cache \
     bash \
     wget \
@@ -24,6 +24,7 @@ RUN echo @main http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositori
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Install composer and add its bin to the PATH.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -s http://getcomposer.org/installer | php \
     && echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc \
     && mv composer.phar /usr/local/bin/composer
