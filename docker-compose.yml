@@ -27,6 +27,7 @@ services:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
     environment:
       - APP_ENV=${APPLICATION_ENV}
+      - TZ=${APP_TIMEZONE}
     networks:
       - backend
 
@@ -40,6 +41,7 @@ services:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
     environment:
       - APP_ENV=${APPLICATION_ENV}
+      - TZ=${APP_TIMEZONE}
     networks:
       - backend
 
@@ -48,7 +50,6 @@ services:
       context: docker/nginx
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-      - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
       - ${NGINX_VHOSTS_PATH}:/etc/nginx/vhosts
       - ${NGINX_CONF_PATH}:/etc/nginx/nginx.conf
       - ${NGINX_CONFD_PATH}:/etc/nginx/conf.d
@@ -60,6 +61,7 @@ services:
     environment:
       - NGINX_HOST_HTTP_PORT=${NGINX_HOST_HTTP_PORT}
       - NGINX_HOST_HTTPS_PORT=${NGINX_HOST_HTTPS_PORT}
+      - TZ=${APP_TIMEZONE}
     depends_on:
       - php
       - node
@@ -79,6 +81,7 @@ services:
       - MYSQL_USER=${MARIADB_USER}
       - MYSQL_PASSWORD=${MARIADB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - TZ=${APP_TIMEZONE}
     networks:
       - backend
 
@@ -88,6 +91,8 @@ services:
       - backend
     ports:
       - "${REDIS_PORT}:6379"
+    environment:
+      - TZ=${APP_TIMEZONE}
     volumes:
       - ${DATA_PATH_HOST}/redis:/data
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
@@ -99,6 +104,7 @@ services:
     environment:
       - cluster.name=hive-cluster
       - bootstrap.memory_lock=true
+      - TZ=${APP_TIMEZONE}
       - "ES_JAVA_OPTS=-Xms${ELASTICSEARCH_MAX_MEMORY_SIZE} -Xmx${ELASTICSEARCH_MAX_MEMORY_SIZE}"
     ulimits:
       memlock:
